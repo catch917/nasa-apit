@@ -1,0 +1,24 @@
+name: Get NASA picture
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  send-get-request:
+    runs-on: windows-latest
+
+    steps:
+      - name: Get picture
+        run: |
+          $myJson = Invoke-WebRequest https://api.nasa.gov/planetary/apod?api_key=jgEaDMsiAQHX2Ul5asf63q2XSUtcWHXhscWDL3IU | ConvertFrom-Json 
+          Write-Host $myJson.url
+          Invoke-WebRequest $myJson.url -OutFile pic.jpg
+
+      - name: Upload response as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: http-response
+          path: pic.jpg       
